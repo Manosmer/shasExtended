@@ -3,6 +3,15 @@ package SHAS
 import Auxiliary._
 
 object PrimLMDense extends Serializable {
+    /**
+      * Driver function that calls primForEdges for local mst computation and creates the mst's key. 
+      *
+      * @param compositeKey the key of the edges
+      * @param E the given edges
+      * @param numSplits the number of splits of the vertices (used to create the key of the mst)
+      * 
+      * @return the mst of the given vertices with its corresponding key
+      */
     def denseMST(compositeKey: (Int, Int), E: Iterable[MstEdge], numSplits: Int): Array[(Int, MstEdge)] = {
         if(compositeKey._1 == compositeKey._2) {
             primForEdges(compositeKey._1, E)
@@ -11,12 +20,17 @@ object PrimLMDense extends Serializable {
         }
     }
 
-    // TODO : completePrim, bipartitePrim
+    /**
+      * Computes the local mst based on the given edges using Prim's algo. 
+      *
+      * @param key the key of the mst
+      * @param E the given edges
+      * 
+      * @return the edges of the mst mapped by the key.
+      */
     private def primForEdges(key: Int, E: Iterable[MstEdge]): Array[(Int, MstEdge)] = {
-        // placeholder
         var it = E.iterator
         var edgeMapper = collection.mutable.Map[String, Array[MstEdge]]()
-        // var pQ = collection.mutable.PriorityQueue[(String, primVertexHeader)]()(Ordering.by[(String, primVertexHeader), Double](_._2.distance))
 
         // create adjacency list
         while(it.hasNext) {
@@ -42,7 +56,7 @@ object PrimLMDense extends Serializable {
 
         // find MST
         for(mstcnt <- 0 until vertexNum - 1) {
-            // TODO
+
             for(adjedge <- edgeMapper(nextV)) {
                 // find the destination point, nextV is the source endpoint 
                 var destpoint = ""
