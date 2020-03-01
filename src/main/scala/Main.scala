@@ -9,10 +9,6 @@ import KruskalMerger._
 import Auxiliary._
 
 
-/** TODO
-  *  1. polydiastata opou xreiazetai 
-  *  2. na kanw opoydhpote yparxei representation koryfhs String kai oxi Array[Double] xwris logo.
-  */
 
 object Main extends Serializable {
     val r = new scala.util.Random
