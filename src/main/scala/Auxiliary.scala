@@ -45,6 +45,10 @@ object Auxiliary extends Serializable {
      * the consecutive positions from numSplits till the end in order to be correctly partitioned 
      * in the merge phase.
      * 
+     * The key of the bipartite subgraph's mst is produced by finding the numerical representation of 
+     * "k1"+"k2" and shifting it by numsplits - Σ(k1+1). That way, all bipartite submsts will have a unique 
+     * key between numsplits and total num of submsts.
+     * 
      * @return the key of the bipartite subgraph's mst.
      */
     def bipartitekey(k1: Int, k2: Int, numSplits: Int): Int = {

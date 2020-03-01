@@ -5,7 +5,9 @@ import Auxiliary._
 object PrimLocalMST extends Serializable{
     /** Finds the local mst of a given set of vertices, implementing Prim's algo.
      * 
-     * @return a tuple (key, Array[] ) representing the subgraph's id and the set of edges which constitute the MST.
+     * @param v the set of vertices
+     * @param key the split id
+     * @return the set of edges which constitute the MST mapped by the key (split id).
      */
     def primMST(v: Iterable[Array[Double]], key: Int): Array[(Int, MstEdge)] = {
         // the MST
@@ -53,13 +55,11 @@ object PrimLocalMST extends Serializable{
 
     /** Used like the primMST function but tweaked for complete bipartite graphs.
      * 
-     * The key of the bipartite subgraph's mst is produced by finding the numerical representation of 
-     * "k1"+"k2" and shifting it by numsplits - Σ(k1+1). That way, all bipartite submsts will have a unique 
-     * key between numsplits and total num of submsts.
-     * 
-     * @param numSplits the number of splits of the initial vertex set 
+     * @param k1 the first key of the bipartite graph
+     * @param k2 the second key of the bipartite graph
+     * @param v1 the edges of the bipartite graph 
 
-     * @return a tuple (key, edges) representing the key of the bipartite subgraph with the edges of the computed MST.
+     * @return the set of edges which constitute the MST mapped by the key (created by Auxiliary.bipartiteKey).
      */ 
     def primBipartiteMST(k1: Int, k2: Int, v1: Iterable[Array[Double]], v2: Iterable[Array[Double]], numSplits: Int): Array[(Int, MstEdge)] = {
         val key = bipartitekey(k1, k2, numSplits)

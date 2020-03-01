@@ -93,8 +93,7 @@ object PrimLMDense extends Serializable {
             }
         }
 
-        // return sorted edges by distance. Erase null positions (disconnected graph produces less edges
-        // than v - 1)
+        // Erase null positions (disconnected graph produces less edges than v - 1)
         mst.filter(_ != null)
     }
 }
