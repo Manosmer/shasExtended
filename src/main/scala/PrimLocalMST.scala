@@ -15,13 +15,11 @@ object PrimLocalMST extends Serializable{
 
         var it = v.iterator
         // create a map of vertex -> primVertexHeader for every vertex
-        var vertexDistMapper: collection.mutable.Map[String, primVertexHeader] = collection.mutable.Map.empty[String, primVertexHeader]
+        var vertexDistMapper = collection.mutable.Map.empty[String, primVertexHeader]
         while(it.hasNext) {
             val nextV = it.next()
             vertexDistMapper += (vdts(nextV) -> new primVertexHeader(INF, ""))
         }
-
-        var i = 0
 
         // first vertex of graph as a starting point
         var nextV = v.iterator.next()
@@ -41,7 +39,7 @@ object PrimLocalMST extends Serializable{
                 }
             }
 
-            // find next min vertex and the corresponding edge
+            // find next min edge and the corresponding vertex
             val minV = getMinV(vertexDistMapper)
             val minheader = vertexDistMapper(minV)
             nextV = vstd(minV)
@@ -57,7 +55,8 @@ object PrimLocalMST extends Serializable{
      * 
      * @param k1 the first key of the bipartite graph
      * @param k2 the second key of the bipartite graph
-     * @param v1 the edges of the bipartite graph 
+     * @param v1 the vertices of the left complete subgraph
+     * @param v2 the vertices of the right complete subgraph
 
      * @return the set of edges which constitute the MST mapped by the key (created by Auxiliary.bipartiteKey).
      */ 
@@ -66,8 +65,8 @@ object PrimLocalMST extends Serializable{
         var mst: Array[(Int, MstEdge)] = new Array(v1.size + v2.size - 1)
 
         // create mappers for each subset of the bipartite graph
-        var dMapper1: collection.mutable.Map[String, primVertexHeader] = collection.mutable.Map.empty[String, primVertexHeader]
-        var dMapper2: collection.mutable.Map[String, primVertexHeader] = collection.mutable.Map.empty[String, primVertexHeader]
+        var dMapper1 = collection.mutable.Map.empty[String, primVertexHeader]
+        var dMapper2 = collection.mutable.Map.empty[String, primVertexHeader]
 
         // mapper for left graph
         var it1 = v1.iterator
@@ -82,8 +81,6 @@ object PrimLocalMST extends Serializable{
             val nextV = it2.next()
             dMapper2 += (vdts(nextV) -> new primVertexHeader(INF, ""))
         }
-
-        var i = 0;
 
         // first left vertex as a starting point
         var nextV = v1.iterator.next()

@@ -1,6 +1,7 @@
 package SHAS
 
 import Auxiliary._
+import scala.collection.mutable
 
 object PrimLMDense extends Serializable {
     /**
@@ -30,28 +31,29 @@ object PrimLMDense extends Serializable {
       */
     private def primForEdges(key: Int, E: Iterable[MstEdge]): Array[(Int, MstEdge)] = {
         var it = E.iterator
-        var edgeMapper = collection.mutable.Map[String, Array[MstEdge]]()
+        var edgeMapper = collection.mutable.Map[String, mutable.ListBuffer[MstEdge]]()
 
         // create adjacency list
         while(it.hasNext) {
             val e = it.next()
             if(!edgeMapper.contains(vdts(e._1))) {
-                edgeMapper(vdts(e._1)) = Array()
+                edgeMapper(vdts(e._1)) = mutable.ListBuffer[MstEdge](e)
+            } else {
+                edgeMapper(vdts(e._1)) += e
             }
-            edgeMapper(vdts(e._1)) = edgeMapper(vdts(e._1)) :+ e
             if(!edgeMapper.contains(vdts(e._2))) {
-                edgeMapper(vdts(e._2)) = Array()
+                edgeMapper(vdts(e._2)) = mutable.ListBuffer[MstEdge](e)
+            } else {
+                edgeMapper(vdts(e._2)) += e
             }
-            edgeMapper(vdts(e._2)) = edgeMapper(vdts(e._2)) :+ e
         }
-        
         var vertexDistMapper = collection.mutable.Map(edgeMapper.keys.toArray.map(x => (x, new primVertexHeader(INF, ""))):_*)
         
         val vertexNum = vertexDistMapper.keys.size
+
         var mst: Array[(Int, MstEdge)] = new Array(vertexNum - 1)
         // first vertex as a starting point
-        var keyIt = vertexDistMapper.keysIterator
-        var nextV = keyIt.next()
+        var nextV = vertexDistMapper.keysIterator.next()
         vertexDistMapper -= nextV
 
         // find MST
@@ -65,18 +67,20 @@ object PrimLMDense extends Serializable {
                 } else {
                     destpoint = vdts(adjedge._1)
                 }
-                // if destination is has not been selected yet
-                if(vertexDistMapper.contains(destpoint)) {
+                
+                try {
                     var bheader = vertexDistMapper(destpoint)
-                    val pairdist = dist(vstd(nextV), vstd(destpoint))
+                    val pairdist = adjedge._3
                     if(pairdist < bheader.distance) {
                         bheader.changeDis(pairdist, nextV)
                     }
+                } catch {
+                    case e: NoSuchElementException =>
                 }
             }
 
             // implementation for disconnected graph
-            // find next min vertex and the corresponding edge
+            // find next min edge and the corresponding vertex
             val minV = getMinV(vertexDistMapper)
             if(minV != "") {
                 // if min exists (connected component not yet traversed fully)

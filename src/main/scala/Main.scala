@@ -24,12 +24,6 @@ object Main extends Serializable {
         (partitionKey, v)
     }
 
-    /** Returns the Array[Double] representation of a string of vertex
-     */
-    def toVertex(s: String): Array[Double] = {
-        s.trim.split("\\s+").map(_.toDouble)
-    }
-
     def vertexMap(v: String, k: Int): (String, Int) = {
         val partitionKey = r.nextInt(k)
 
@@ -41,9 +35,9 @@ object Main extends Serializable {
         val k2 = mapper(vdts(e._2))
 
         if(k1 <= k2) {
-            ((k1, k2), e)
+            return ((k1, k2), e)
         } else {
-            ((k2, k1), e)
+            return ((k2, k1), e)
         }
     }
 
@@ -58,15 +52,16 @@ object Main extends Serializable {
 
         val spark = SparkSession.builder
             .master("local["+ cpus +"]")
-            .appName("SHAS|cpus:" + cpus + "|D:" + inputPath +"|partNum:" + numInPartition + "|mergeF:" + mergeFactor)
+            .appName("Extended SHAS cpus:" + cpus + "|D:" + inputPath +"|partNum:" + numInPartition + "|mergeF:" + mergeFactor)
             .getOrCreate
 
         val sc = spark.sparkContext
         import spark.implicits._ 
 
+        var iterations = 0
         if(mode == "-c") {
 
-            val vertices = sc.textFile(inputPath).map(toVertex)
+            val vertices = sc.textFile(inputPath).map(vstd)
             val n = vertices.count
             val k = (math.ceil(n.toDouble / numInPartition)).toInt
     
@@ -82,6 +77,7 @@ object Main extends Serializable {
             // merge phase
             var allMSTnum = k + (k * (k - 1) / 2) 
             while(allMSTnum > 1) {
+                iterations += 1
                 // num of buckets of mergeFactor msts
                 val l = math.ceil(allMSTnum.toDouble / mergeFactor).toInt
     
@@ -106,10 +102,8 @@ object Main extends Serializable {
             val k = (math.ceil(n.toDouble / numInPartition)).toInt
 
             // create mapper to partition each edge based on endpoints
-            val vertexMapperRaw = vertices.map(vertexMap(_, k)).collect
+            val vertexMapper = vertices.map(vertexMap(_, k)).collect.toMap
 
-            // broadcast that shit
-            val vertexMapper = vertexMapperRaw.toMap
             val broadcastMapper = sc.broadcast(vertexMapper)
 
             // find local MSTs
@@ -118,6 +112,7 @@ object Main extends Serializable {
             // merge phase
             var allMSTnum = k + (k * (k - 1) / 2) 
             while(allMSTnum > 1) {
+                iterations += 1
                 // num of buckets of mergeFactor msts
                 val l = math.ceil(allMSTnum.toDouble / mergeFactor).toInt
     
@@ -132,6 +127,7 @@ object Main extends Serializable {
             val finalMST = allMST.collect()
             println(finalMST.map(_._2._3).reduce(_ + _))
         }
+        println(iterations)
         sc.stop()
     }
 

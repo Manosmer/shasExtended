@@ -5,7 +5,6 @@ import math.{pow, sqrt}
 
 object Auxiliary extends Serializable {
     val INF = Double.MaxValue
-    val EOMST = -1
 
     type MstEdge = (Array[Double], Array[Double], Double)
 
@@ -83,7 +82,7 @@ object Auxiliary extends Serializable {
      * parent: the endpoint to which the current vertex was recorded to be connected
      */
     class primVertexHeader {
-        var distance: Double = -0.1
+        var distance: Double = INF
         var parent: String = ""
 
         def this(d: Double, p: String) = {

@@ -1,0 +1,9 @@
+.bloop
+.metals
+project
+src/test
+target/scala-2.11/classes/*
+target/scala-2.11/src_managed/*
+target/scala-2.11/update/*
+streams
+build.sbt
