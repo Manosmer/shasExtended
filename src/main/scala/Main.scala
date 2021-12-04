@@ -82,7 +82,11 @@ object Main extends Serializable {
                 val l = math.ceil(allMSTnum.toDouble / mergeFactor).toInt
     
                 // fill the l buckets / distribute based on hash
-                val hashMSTs = allMST.map(x => (x._1 % l, x._2))
+                // val hashMSTs = allMST.map(x => (x._1 % l, x._2))
+
+                // fill the l buckets / distribute based on integer division
+                val hashMSTs = allMST.map(x => (x._1 / l, x._2))
+
                 // merge
                 allMST = hashMSTs.groupByKey().flatMap(x => kruskalMerge(x._1, x._2))
                 allMSTnum = l
@@ -117,7 +121,11 @@ object Main extends Serializable {
                 val l = math.ceil(allMSTnum.toDouble / mergeFactor).toInt
     
                 // fill the l buckets / distribute based on hash
-                val hashMSTs = allMST.map(x => (x._1 % l, x._2))
+                // val hashMSTs = allMST.map(x => (x._1 % l, x._2))
+
+                // fill the l buckets / distribute based on integer division
+                val hashMSTs = allMST.map(x => (x._1 / l, x._2))
+
                 // merge
                 allMST = hashMSTs.groupByKey().flatMap(x => kruskalMerge(x._1, x._2))
                 allMSTnum = l
